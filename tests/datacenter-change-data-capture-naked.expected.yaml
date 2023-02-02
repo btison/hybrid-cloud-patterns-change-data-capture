@@ -1,4 +1,156 @@
 ---
+# Source: globex/charts/kafdrop/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kafdrop
+  labels:
+    helm.sh/chart: kafdrop-0.1.0
+    app.kubernetes.io/name: kafdrop
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: kafdrop
+---
+# Source: globex/charts/kafdrop/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kafdrop
+  labels:
+    helm.sh/chart: kafdrop-0.1.0
+    app.kubernetes.io/name: kafdrop
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: kafdrop
+type: "Opaque"
+stringData:
+  kafkaBootstrapServer: "kafka-kafka-bootstrap:9092"
+  kafka.properties: |-
+---
+# Source: globex/charts/kafdrop/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafdrop
+  labels:
+    helm.sh/chart: kafdrop-0.1.0
+    app.kubernetes.io/name: kafdrop
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: kafdrop
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9000
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: kafdrop
+    app.kubernetes.io/instance: datacenter-change-data-capture
+---
+# Source: globex/charts/kafdrop/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafdrop
+  labels:
+    helm.sh/chart: kafdrop-0.1.0
+    app.kubernetes.io/name: kafdrop
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: kafdrop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kafdrop
+      app.kubernetes.io/instance: datacenter-change-data-capture
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: kafdrop
+        app.kubernetes.io/instance: datacenter-change-data-capture
+    spec:
+      serviceAccountName: kafdrop
+      serviceAccount: kafdrop
+      securityContext:
+        {}
+      containers:
+        - name: kafdrop
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          image: "obsidiandynamics/kafdrop:latest"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: KAFKA_BROKERCONNECT
+              valueFrom:
+                secretKeyRef:
+                  key: kafkaBootstrapServer
+                  name: kafdrop
+            - name: KAFKA_PROPERTIES
+            - name: KAFKA_TRUSTSTORE
+            - name: KAFKA_KEYSTORE
+            - name: JVM_OPTS
+            - name: JMX_PORT
+              value: '8686'
+            - name: HOST
+            - name: SERVER_SERVLET_CONTEXTPATH
+              value: /
+            - name: KAFKA_PROPERTIES_FILE
+              value: /config/kafka.properties
+            - name: KAFKA_TRUSTSTORE_FILE
+            - name: KAFKA_KEYSTORE_FILE
+            - name: SERVER_PORT
+              value: '9000'
+            - name: CMD_ARGS
+            - name: SCHEMAREGISTRY_CONNECT
+            - name: SCHEMAREGISTRY_AUTH            
+          ports:
+            - name: http
+              containerPort: 9000
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 180
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 10
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /actuator/health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 10
+          resources:
+            {}
+          volumeMounts:
+            - name: kafka-properties
+              mountPath: /config
+      volumes:
+        - name: kafka-properties
+          secret:
+            secretName: kafdrop
+            defaultMode: 420
+---
 # Source: globex/charts/kafka-cluster/templates/kafka-cr.yaml
 apiVersion: kafka.strimzi.io/v1beta2
 kind: Kafka
@@ -174,3 +326,27 @@ spec:
     retention.ms: -1
     segment.bytes: 1073741824
   topicName: retail.sale-aggregated
+---
+# Source: globex/charts/kafdrop/templates/route.yaml
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: kafdrop
+  labels:
+    helm.sh/chart: kafdrop-0.1.0
+    app.kubernetes.io/name: kafdrop
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: kafdrop
+spec:
+  to:
+    kind: Service
+    name: kafdrop
+    weight: 100
+  port:
+    targetPort: http
+  wildcardPolicy: None
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
