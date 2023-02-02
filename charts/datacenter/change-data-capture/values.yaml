@@ -1,0 +1,8 @@
+---
+argocd: 
+  enabled: &argo true
+
+kafka-cluster:
+  argocd: 
+    enabled: *argo
+    syncwave: "-2"

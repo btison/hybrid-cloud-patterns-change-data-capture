@@ -17,3 +17,6 @@ post-install: ## Post-install tasks - vault init and load-secrets
 
 common-test: ## runs helm tests in common/
 	make -C common -f common/Makefile test
+
+test:
+	make -f common/Makefile CHARTS="$(wildcard charts/datacenter/*)" PATTERN_OPTS="-f values-datacenter.yaml" test

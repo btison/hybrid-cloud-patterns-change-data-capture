@@ -8,4 +8,4 @@ global:
     installPlanApproval: Automatic
 
 main:
-  clusterGroupName: hub
+  clusterGroupName: datacenter

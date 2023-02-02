@@ -1,0 +1,6 @@
+dependencies:
+- name: kafka-cluster
+  repository: file://kafka-cluster
+  version: 0.1.0
+digest: sha256:a24775c33eb6cbf92f3c4445d6ad994de6709563ec595ee9ab3bdcd1ce12946b
+generated: "2023-02-02T14:11:54.567501047+01:00"

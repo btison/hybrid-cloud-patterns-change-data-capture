@@ -1,0 +1,38 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: {{ include "kafka-broker.name" . }}
+  labels:
+    {{- include "kafka-broker.labels" . | nindent 4 }}
+  annotations:
+    {{- include "kafka-broker.argocd-syncwave" . | nindent 4 }}
+spec:
+  kafka:
+    replicas: {{ .Values.kafka.cluster.replicas }}
+    version: {{ .Values.kafka.version }}
+    listeners:
+    - name: plain
+      port: 9092
+      type: internal
+      tls: false
+    - name: tls
+      port: 9093
+      type: internal
+      tls: true
+    config:
+      auto.create.topics.enable: {{ .Values.kafka.config.autoCreateTopics }}
+      offsets.topic.replication.factor: {{ .Values.kafka.config.offsetsTopicReplicationFactor }}
+      transaction.state.log.min.isr: {{ .Values.kafka.config.transactionStateLogMinIsr }}
+      transaction.state.log.replication.factor: {{ .Values.kafka.config.transactionStateLogReplicationFactor }}
+      default.replication.factor: {{ .Values.kafka.config.defaultReplicationFactor }}
+      min.insync.replicas: {{ .Values.kafka.config.minInsyncReplicas }}
+      inter.broker.protocol.version: '{{ .Values.kafka.config.interBrokerProtocolVersion }}'
+    storage:
+      type: ephemeral 
+  zookeeper:
+    replicas: {{ .Values.kafka.zookeeper.replicas }}
+    storage:
+      type: ephemeral
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}

@@ -1,0 +1,44 @@
+---
+# Source: globex/charts/kafka-cluster/templates/kafka-cr.yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: kafka
+  labels:
+    helm.sh/chart: kafka-cluster-0.1.0
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+spec:
+  kafka:
+    replicas: 3
+    version: 3.3.1
+    listeners:
+    - name: plain
+      port: 9092
+      type: internal
+      tls: false
+    - name: tls
+      port: 9093
+      type: internal
+      tls: true
+    config:
+      auto.create.topics.enable: false
+      offsets.topic.replication.factor: 3
+      transaction.state.log.min.isr: 2
+      transaction.state.log.replication.factor: 3
+      default.replication.factor: 3
+      min.insync.replicas: 2
+      inter.broker.protocol.version: '3.3'
+    storage:
+      type: ephemeral 
+  zookeeper:
+    replicas: 3
+    storage:
+      type: ephemeral
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}
