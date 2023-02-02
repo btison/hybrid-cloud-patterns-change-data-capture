@@ -11,5 +11,8 @@ dependencies:
 - name: retail-db
   repository: https://solution-pattern-cdc.github.io/helm
   version: 0.1.0
-digest: sha256:e7cf6c8f4e07d9ee050ebef264cc1d14f459adaa9b92841d89d64fbd04b5f2f7
-generated: "2023-02-02T18:44:55.151048096+01:00"
+- name: cashback-db
+  repository: https://solution-pattern-cdc.github.io/helm
+  version: 0.1.0
+digest: sha256:43b4994a3c0da6b3a79deedb4657977a9776fc2cfbf1e379cdbebddc91a9d172
+generated: "2023-02-02T19:16:47.740638224+01:00"

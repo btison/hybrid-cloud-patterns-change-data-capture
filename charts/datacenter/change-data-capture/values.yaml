@@ -16,3 +16,8 @@ retail-db:
   argocd: 
     enabled: *argo
     syncwave: "-2"
+
+cashback-db:
+  argocd: 
+    enabled: *argo
+    syncwave: "-2"

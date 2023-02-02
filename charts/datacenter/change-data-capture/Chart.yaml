@@ -36,3 +36,6 @@ dependencies:
   - name: retail-db
     version: 0.1.0
     repository: https://solution-pattern-cdc.github.io/helm
+  - name: cashback-db
+    version: 0.1.0
+    repository: https://solution-pattern-cdc.github.io/helm
