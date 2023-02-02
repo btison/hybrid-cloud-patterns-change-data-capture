@@ -45,3 +45,6 @@ dependencies:
   - name: kafka-connect
     version: 0.1.0
     repository: https://solution-pattern-cdc.github.io/helm
+  - name: elastic-connector
+    version: 0.1.0
+    repository: https://solution-pattern-cdc.github.io/helm

@@ -26,6 +26,9 @@ elasticsearch:
   argocd:
     enabled: *argo
     syncwave: "-2"
+  credentials:
+    username: cashback
+    password: cashback
 
 kafka-connect:
   argocd:
@@ -36,3 +39,13 @@ kafka-connect:
   authentication:
     enabled: false
   tls: false
+
+elastic-connector:
+  kafka:
+    bootstrapServer: "kafka-kafka-bootstrap:9092"
+    securityProtocol: ""
+    saslMechanism: ""
+  elasticsearch:
+    hosts: retail-es-http:9200
+    username: cashback
+    password: cashback
