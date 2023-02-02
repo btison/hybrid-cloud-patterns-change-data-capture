@@ -26,3 +26,13 @@ elasticsearch:
   argocd:
     enabled: *argo
     syncwave: "-2"
+
+kafka-connect:
+  argocd:
+    enabled: *argo
+    syncwave: "-1"
+  replicationFactor: 3
+  bootstrapServers: "kafka-kafka-bootstrap:9092"
+  authentication:
+    enabled: false
+  tls: false

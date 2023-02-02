@@ -621,6 +621,21 @@ spec:
     changeBudget: {}
   version: 7.17.2
 ---
+# Source: globex/charts/kafka-connect/templates/kafka-connect-build-is.yaml
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: kafka-connect-build
+  labels:
+    helm.sh/chart: kafka-connect-0.1.0
+    app.kubernetes.io/name: kafka-connect
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: retail-connectors
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+---
 # Source: globex/charts/kafka-cluster/templates/kafka-cr.yaml
 apiVersion: kafka.strimzi.io/v1beta2
 kind: Kafka
@@ -664,6 +679,65 @@ spec:
   entityOperator:
     topicOperator: {}
     userOperator: {}
+---
+# Source: globex/charts/kafka-connect/templates/kafka-connect.yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnect
+metadata:
+  name: kafka-connect
+  annotations:
+    strimzi.io/use-connector-resources: 'true'
+    argocd.argoproj.io/sync-wave: "-1"
+  labels:
+    helm.sh/chart: kafka-connect-0.1.0
+    app.kubernetes.io/name: kafka-connect
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: retail-connectors
+spec:
+  version: 3.3.1
+  replicas: 1
+  bootstrapServers: kafka-kafka-bootstrap:9092
+  config:
+    group.id: kafka-connect
+    offset.storage.topic: 'retail.kafka-connect-offsets'
+    config.storage.topic: 'retail.kafka-connect-configs'
+    status.storage.topic: 'retail.kafka-connect-status'
+    key.converter: org.apache.kafka.connect.json.JsonConverter
+    value.converter: org.apache.kafka.connect.json.JsonConverter
+    key.converter.schemas.enable: false
+    value.converter.schemas.enable: false
+    config.storage.replication.factor: 3
+    offset.storage.replication.factor: 3
+    status.storage.replication.factor: 3
+    topic.creation.enable: true
+    default.replication.factor: 3
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 250Mi
+  livenessProbe:
+    initialDelaySeconds: 45
+    timeoutSeconds: 5
+  readinessProbe:
+    initialDelaySeconds: 15
+    timeoutSeconds: 5
+  jvmOptions:
+    gcLoggingEnabled: false
+  build:
+    output:
+      type: imagestream
+      image: kafka-connect-build:latest
+    plugins:
+      - artifacts:
+        - sha512sum: 088a92a7456101d7f01e356250439728e2018355d11797f20b8520d58ba6ce4400f917263223386b031c000d21010e1387970707bd7e8f92a681ac3c88ccc38b
+          type: tgz
+          url: https://repo1.maven.org/maven2/io/debezium/debezium-connector-postgres/1.9.7.Final/debezium-connector-postgres-1.9.7.Final-plugin.tar.gz
+        name: debezium-postgres-connector
 ---
 # Source: globex/charts/kafka-topics/templates/kafka-topic.yaml
 apiVersion: kafka.strimzi.io/v1beta2

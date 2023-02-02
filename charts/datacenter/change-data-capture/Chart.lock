@@ -17,5 +17,8 @@ dependencies:
 - name: elasticsearch
   repository: https://solution-pattern-cdc.github.io/helm
   version: 0.1.0
-digest: sha256:669cc3ed2e32bb1017bd57b6420c220f1788801009e00365b0b2599afbdb80d2
-generated: "2023-02-02T19:41:33.946288968+01:00"
+- name: kafka-connect
+  repository: https://solution-pattern-cdc.github.io/helm
+  version: 0.1.0
+digest: sha256:5933bcf51a7efed44a7f2c4613eaca7d7253f17fc245fd9ae77665bc79492e62
+generated: "2023-02-02T20:41:18.463605455+01:00"
