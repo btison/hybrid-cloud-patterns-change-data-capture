@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "kafka-broker.name" -}}
+{{- define "kafka-cluster.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "kafka-broker.fullname" -}}
+{{- define "kafka-cluster.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "kafka-broker.chart" -}}
+{{- define "kafka-cluster.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "kafka-broker.labels" -}}
-helm.sh/chart: {{ include "kafka-broker.chart" . }}
-{{ include "kafka-broker.selectorLabels" . }}
+{{- define "kafka-cluster.labels" -}}
+helm.sh/chart: {{ include "kafka-cluster.chart" . }}
+{{ include "kafka-cluster.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,17 +45,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "kafka-broker.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "kafka-broker.name" . }}
+{{- define "kafka-cluster.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "kafka-cluster.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "kafka-broker.serviceAccountName" -}}
+{{- define "kafka-cluster.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "kafka-broker.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "kafka-cluster.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
@@ -64,7 +64,7 @@ Create the name of the service account to use
 {{/*
 Find the name of the OpenShift domain
 */}}
-{{- define "kafka-broker.ocpDomain" -}}
+{{- define "kafka-cluster.ocpDomain" -}}
 {{- $ingresscontroller := (lookup "operator.openshift.io/v1" "IngressController" "openshift-ingress-operator" "default") | default dict }}
 {{- $status := (get $ingresscontroller "status") | default dict }}
 {{- $ocpDomain := (get $status "domain") | default dict }}
@@ -74,7 +74,7 @@ Find the name of the OpenShift domain
 {/*
 ArgoCD Syncwave
 */}}
-{{- define "kafka-broker.argocd-syncwave" -}}
+{{- define "kafka-cluster.argocd-syncwave" -}}
 {{- if .Values.argocd }}
 {{- if and (.Values.argocd.syncwave) (.Values.argocd.enabled) -}}
 argocd.argoproj.io/sync-wave: "{{ .Values.argocd.syncwave }}"

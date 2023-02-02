@@ -1,11 +1,11 @@
 apiVersion: kafka.strimzi.io/v1beta2
 kind: Kafka
 metadata:
-  name: {{ include "kafka-broker.name" . }}
+  name: {{ include "kafka-cluster.name" . }}
   labels:
-    {{- include "kafka-broker.labels" . | nindent 4 }}
+    {{- include "kafka-cluster.labels" . | nindent 4 }}
   annotations:
-    {{- include "kafka-broker.argocd-syncwave" . | nindent 4 }}
+    {{- include "kafka-cluster.argocd-syncwave" . | nindent 4 }}
 spec:
   kafka:
     replicas: {{ .Values.kafka.cluster.replicas }}
