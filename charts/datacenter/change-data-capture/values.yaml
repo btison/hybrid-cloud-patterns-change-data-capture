@@ -11,4 +11,8 @@ kafka-topics:
   argocd: 
     enabled: *argo
     syncwave: "-2"
-    
+
+retail-db:
+  argocd: 
+    enabled: *argo
+    syncwave: "-2"

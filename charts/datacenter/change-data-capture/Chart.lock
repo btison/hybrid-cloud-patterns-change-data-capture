@@ -8,5 +8,8 @@ dependencies:
 - name: kafdrop
   repository: file://kafdrop
   version: 0.1.0
-digest: sha256:6db3794f26f39e5825cc6882b6f76f11ecfd34b908fdad8ca1af89432743beec
-generated: "2023-02-02T17:32:25.542287084+01:00"
+- name: retail-db
+  repository: https://solution-pattern-cdc.github.io/helm
+  version: 0.1.0
+digest: sha256:e7cf6c8f4e07d9ee050ebef264cc1d14f459adaa9b92841d89d64fbd04b5f2f7
+generated: "2023-02-02T18:44:55.151048096+01:00"

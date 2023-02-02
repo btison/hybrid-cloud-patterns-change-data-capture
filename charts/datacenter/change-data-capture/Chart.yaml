@@ -33,3 +33,6 @@ dependencies:
   - name: kafdrop
     version: 0.1.0
     repository: file://kafdrop
+  - name: retail-db
+    version: 0.1.0
+    repository: https://solution-pattern-cdc.github.io/helm
