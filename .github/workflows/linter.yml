@@ -51,3 +51,11 @@ jobs:
       - name: Run make common-test
         run: |
           make common-test
+
+      - name: Run make test
+        run: |
+          make test
+
+      - name: Run make helmlint
+        run: |
+          make helmlint
