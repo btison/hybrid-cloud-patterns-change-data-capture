@@ -6,3 +6,9 @@ kafka-cluster:
   argocd: 
     enabled: *argo
     syncwave: "-2"
+
+kafka-topics:
+  argocd: 
+    enabled: *argo
+    syncwave: "-2"
+    

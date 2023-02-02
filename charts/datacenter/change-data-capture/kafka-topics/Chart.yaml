@@ -1,6 +1,6 @@
 apiVersion: v2
-name: globex
-description: A Helm chart for Kubernetes
+name: kafka-topics
+description: A Helm chart for AMQ Streams topics
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -22,11 +22,3 @@ version: 0.1.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: "1.0.0"
-
-dependencies:
-  - name: kafka-cluster
-    version: 0.1.0
-    repository: file://kafka-cluster
-  - name: kafka-topics
-    version: 0.1.0
-    repository: file://kafka-topics

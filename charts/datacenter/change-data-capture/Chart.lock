@@ -2,5 +2,8 @@ dependencies:
 - name: kafka-cluster
   repository: file://kafka-cluster
   version: 0.1.0
-digest: sha256:a24775c33eb6cbf92f3c4445d6ad994de6709563ec595ee9ab3bdcd1ce12946b
-generated: "2023-02-02T14:11:54.567501047+01:00"
+- name: kafka-topics
+  repository: file://kafka-topics
+  version: 0.1.0
+digest: sha256:65e750d4cd2c2039d6c0cbb9bd0d011df5c7985b29e19eb4d1c32722ef893eb6
+generated: "2023-02-02T17:17:06.711946233+01:00"

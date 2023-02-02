@@ -1,0 +1,28 @@
+
+
+kafka:
+  cluster: kafka
+  replicationFactor: 2
+  topics:
+    - name: retail.updates.public.customer
+      partitions: 1
+      retention: -1
+    - name: retail.updates.public.product
+      partitions: 1
+      retention: -1
+    - name: retail.updates.public.sale
+      partitions: 1
+      retention: -1
+    - name: retail.updates.public.line_item
+      partitions: 1
+      retention: -1
+    - name: retail.expense-event
+      partitions: 1
+      retention: -1
+    - name: retail.sale-aggregated
+      partitions: 1
+      retention: -1
+
+argocd:
+  enabled: false
+  syncwave: ""

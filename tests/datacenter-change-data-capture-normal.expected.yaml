@@ -42,3 +42,135 @@ spec:
   entityOperator:
     topicOperator: {}
     userOperator: {}
+---
+# Source: globex/charts/kafka-topics/templates/kafka-topic.yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: retail.updates.public.customer
+  labels:
+    strimzi.io/cluster: kafka
+    helm.sh/chart: kafka-topics-0.1.0
+    app.kubernetes.io/name: kafka-topics
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+spec:
+  partitions: 1
+  replicas: 2
+  config:
+    retention.ms: -1
+    segment.bytes: 1073741824
+  topicName: retail.updates.public.customer
+---
+# Source: globex/charts/kafka-topics/templates/kafka-topic.yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: retail.updates.public.product
+  labels:
+    strimzi.io/cluster: kafka
+    helm.sh/chart: kafka-topics-0.1.0
+    app.kubernetes.io/name: kafka-topics
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+spec:
+  partitions: 1
+  replicas: 2
+  config:
+    retention.ms: -1
+    segment.bytes: 1073741824
+  topicName: retail.updates.public.product
+---
+# Source: globex/charts/kafka-topics/templates/kafka-topic.yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: retail.updates.public.sale
+  labels:
+    strimzi.io/cluster: kafka
+    helm.sh/chart: kafka-topics-0.1.0
+    app.kubernetes.io/name: kafka-topics
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+spec:
+  partitions: 1
+  replicas: 2
+  config:
+    retention.ms: -1
+    segment.bytes: 1073741824
+  topicName: retail.updates.public.sale
+---
+# Source: globex/charts/kafka-topics/templates/kafka-topic.yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: retail.updates.public.line-item
+  labels:
+    strimzi.io/cluster: kafka
+    helm.sh/chart: kafka-topics-0.1.0
+    app.kubernetes.io/name: kafka-topics
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+spec:
+  partitions: 1
+  replicas: 2
+  config:
+    retention.ms: -1
+    segment.bytes: 1073741824
+  topicName: retail.updates.public.line_item
+---
+# Source: globex/charts/kafka-topics/templates/kafka-topic.yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: retail.expense-event
+  labels:
+    strimzi.io/cluster: kafka
+    helm.sh/chart: kafka-topics-0.1.0
+    app.kubernetes.io/name: kafka-topics
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+spec:
+  partitions: 1
+  replicas: 2
+  config:
+    retention.ms: -1
+    segment.bytes: 1073741824
+  topicName: retail.expense-event
+---
+# Source: globex/charts/kafka-topics/templates/kafka-topic.yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: retail.sale-aggregated
+  labels:
+    strimzi.io/cluster: kafka
+    helm.sh/chart: kafka-topics-0.1.0
+    app.kubernetes.io/name: kafka-topics
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+spec:
+  partitions: 1
+  replicas: 2
+  config:
+    retention.ms: -1
+    segment.bytes: 1073741824
+  topicName: retail.sale-aggregated
