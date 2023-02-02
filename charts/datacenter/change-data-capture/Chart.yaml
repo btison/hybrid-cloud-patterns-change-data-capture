@@ -39,3 +39,6 @@ dependencies:
   - name: cashback-db
     version: 0.1.0
     repository: https://solution-pattern-cdc.github.io/helm
+  - name: elasticsearch
+    version: 0.1.0
+    repository: https://solution-pattern-cdc.github.io/helm

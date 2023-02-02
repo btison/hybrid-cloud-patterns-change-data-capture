@@ -63,6 +63,26 @@ stringData:
   database-name: cashback
 type: Opaque
 ---
+# Source: globex/charts/elasticsearch/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: elastic-user-secret
+  labels:
+    helm.sh/chart: elasticsearch-0.1.0
+    app.kubernetes.io/name: elasticsearch
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: retail-connectors
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+type: "Opaque"
+stringData:
+  username: cashback
+  password: cashback
+  roles: superuser
+---
 # Source: globex/charts/kafdrop/templates/secret.yaml
 apiVersion: v1
 kind: Secret
@@ -504,6 +524,102 @@ spec:
         - name: "retail-db-data"
           persistentVolumeClaim:
             claimName: retail-db
+---
+# Source: globex/charts/elasticsearch/templates/config-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: es-config-job
+  labels:
+    helm.sh/chart: elasticsearch-0.1.0
+    app.kubernetes.io/name: elasticsearch
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: retail-connectors
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+spec:
+  parallelism: 1
+  completions: 1
+  template:
+    metadata:
+      name: es-config-job
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: wait-for-elasticearch
+          image: registry.redhat.io/rhel8/support-tools:8.5
+          command:
+            [
+              "sh",
+              "-c",
+              "for i in $(seq 1 300); do nc -zvw1 retail-es-http 9200 && exit 0 || sleep 3; done; exit 1",
+            ]
+      containers:
+        - name: es-config-job
+          image: registry.redhat.io/rhel8/support-tools:8.5
+          env:
+            - name: ELASTICSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: retail-es-elastic-user
+                  key: elastic
+          command:
+            - /bin/sh
+            - -c
+            - |
+              curl -v -u elastic:$ELASTICSEARCH_PASSWORD -X PUT http://retail-es-http:9200/products -H 'Content-Type: application/json' -d '
+              {"mappings":{"properties":{"description":{"type":"text"},"name":{"type":"text"}}},"settings":{"index":{"number_of_replicas":0,"number_of_shards":1}}}
+              '
+---
+# Source: globex/charts/elasticsearch/templates/elasticsearch.yaml
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: retail
+  labels:
+    helm.sh/chart: elasticsearch-0.1.0
+    app.kubernetes.io/name: elasticsearch
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: retail-connectors
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+spec:
+  auth:
+    fileRealm:
+    - secretName: elastic-user-secret
+  http:
+    service:
+      {}
+    tls:
+      certificate: {}
+      selfSignedCertificate:
+        disabled: true
+  monitoring:
+    logs: {}
+    metrics: {}
+  nodeSets:
+    - config:
+        node.store.allow_mmap: false
+      count: 1
+      name: default
+      podTemplate:
+        metadata:
+          creationTimestamp: null
+        spec:
+          containers: null
+  transport:
+    service:
+      metadata: {}
+      spec: {}
+    tls:
+      certificate: {}
+  updateStrategy:
+    changeBudget: {}
+  version: 7.17.2
 ---
 # Source: globex/charts/kafka-cluster/templates/kafka-cr.yaml
 apiVersion: kafka.strimzi.io/v1beta2
