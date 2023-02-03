@@ -41,5 +41,8 @@ dependencies:
 - name: retail-simulation
   repository: https://solution-pattern-cdc.github.io/helm
   version: 0.1.0
-digest: sha256:b9cf24a2b7cb2b8abff21c2cae7a270d5981103b1e338283447e6c77e7dbbf4c
-generated: "2023-02-03T20:12:09.811068878+01:00"
+- name: debezium
+  repository: https://solution-pattern-cdc.github.io/helm
+  version: 0.1.0
+digest: sha256:8c329026c0c0ac061a6db2933486b34587c75c302081425ad15d734beb98807e
+generated: "2023-02-03T20:24:45.535307979+01:00"

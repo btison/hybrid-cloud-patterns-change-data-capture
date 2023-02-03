@@ -106,3 +106,13 @@ retail-simulation:
     username: retail
     password: retail
     database: retail
+
+debezium:
+  database:
+    hostname: retail-db
+    port: 5432
+    user: postgres
+    password: password
+    dbname: retail
+  topic:
+    replicationFactor: 3

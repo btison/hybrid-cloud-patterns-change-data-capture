@@ -66,3 +66,6 @@ dependencies:
   - name: retail-simulation
     version: 0.1.0
     repository: https://solution-pattern-cdc.github.io/helm
+  - name: debezium
+    version: 0.1.0
+    repository: https://solution-pattern-cdc.github.io/helm
