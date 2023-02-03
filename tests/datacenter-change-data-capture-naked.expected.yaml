@@ -55,6 +55,19 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "-2"
 ---
+# Source: globex/charts/sales-streams/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sales-streams
+  labels:
+    helm.sh/chart: sales-streams-0.1.0
+    app.kubernetes.io/name: sales-streams
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: retail-connectors
+---
 # Source: globex/charts/cashback-db/templates/secret.yaml
 kind: Secret
 apiVersion: v1
@@ -161,6 +174,36 @@ stringData:
   database-admin-password: password
   database-name: retail
 type: Opaque
+---
+# Source: globex/charts/sales-streams/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sales-streams
+  labels:
+    helm.sh/chart: sales-streams-0.1.0
+    app.kubernetes.io/name: sales-streams
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: retail-connectors
+type: "Opaque"
+stringData:
+  application.properties: |-
+    quarkus.kafka-streams.bootstrap-servers=kafka-kafka-bootstrap:9092
+    
+
+    quarkus.kafka-streams.topics=retail.updates.public.sale,retail.updates.public.line_item,retail.sale-aggregated
+
+    quarkus.kafka-streams.application-id=retail
+
+    quarkus.kafka-streams.commit.interval.ms=10000
+    
+    quarkus.kafka-streams.replication.factor=3
+
+    topic.sale-change-event=retail.updates.public.sale
+    topic.lineitem-change-event=retail.updates.public.line_item
+    topic.aggregated-sale=retail.sale-aggregated
 ---
 # Source: globex/charts/cashback-db/templates/pvc.yaml
 kind: PersistentVolumeClaim
@@ -274,6 +317,29 @@ spec:
       targetPort: postgres
   selector:
     app.kubernetes.io/name: retail-db
+    app.kubernetes.io/instance: datacenter-change-data-capture
+---
+# Source: globex/charts/sales-streams/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: sales-streams
+  labels:
+    helm.sh/chart: sales-streams-0.1.0
+    app.kubernetes.io/name: sales-streams
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: retail-connectors
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: sales-streams
     app.kubernetes.io/instance: datacenter-change-data-capture
 ---
 # Source: globex/charts/cashback-db/templates/deployment.yaml
@@ -636,6 +702,82 @@ spec:
         - name: "retail-db-data"
           persistentVolumeClaim:
             claimName: retail-db
+---
+# Source: globex/charts/sales-streams/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    helm.sh/chart: sales-streams-0.1.0
+    app.kubernetes.io/name: sales-streams
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: retail-connectors
+    app.openshift.io/runtime: quarkus    
+  name: sales-streams
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sales-streams
+      app.kubernetes.io/instance: datacenter-change-data-capture
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/name: sales-streams
+        app.kubernetes.io/instance: datacenter-change-data-capture
+    spec:
+      serviceAccountName: sales-streams
+      securityContext:
+        {}
+      containers:
+        - name: sales-streams
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          image: "quay.io/solution-pattern-cdc/sales-streams:facb2c4"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 250m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          livenessProbe:
+            httpGet:
+              path: /q/health/live
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /q/health/ready
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+          volumeMounts:
+            - mountPath: /deployments/config
+              name: config
+      volumes:
+        - name: config
+          secret:
+            secretName: sales-streams
 ---
 # Source: globex/charts/elasticsearch/templates/config-job.yaml
 apiVersion: batch/v1

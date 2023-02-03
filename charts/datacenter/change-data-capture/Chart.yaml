@@ -48,3 +48,6 @@ dependencies:
   - name: elastic-connector
     version: 0.1.0
     repository: https://solution-pattern-cdc.github.io/helm
+  - name: sales-streams
+    version: 0.1.0
+    repository: https://solution-pattern-cdc.github.io/helm

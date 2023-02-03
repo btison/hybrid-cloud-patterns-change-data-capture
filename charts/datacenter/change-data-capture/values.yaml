@@ -2,6 +2,8 @@
 argocd: 
   enabled: &argo true
 
+kafkaBootstrapServer: &kafkaBootstrapServer "kafka-kafka-bootstrap:9092"
+
 kafka-cluster:
   argocd: 
     enabled: *argo
@@ -35,17 +37,25 @@ kafka-connect:
     enabled: *argo
     syncwave: "-1"
   replicationFactor: 3
-  bootstrapServers: "kafka-kafka-bootstrap:9092"
+  bootstrapServers: *kafkaBootstrapServer
   authentication:
     enabled: false
   tls: false
 
 elastic-connector:
   kafka:
-    bootstrapServer: "kafka-kafka-bootstrap:9092"
+    bootstrapServer: *kafkaBootstrapServer
     securityProtocol: ""
     saslMechanism: ""
   elasticsearch:
     hosts: retail-es-http:9200
     username: cashback
     password: cashback
+
+sales-streams:
+  kafka:
+    bootstrapServer: *kafkaBootstrapServer
+    securityProtocol: ""
+    saslMechanism: ""
+    streams:
+      replicationFactor: 3
