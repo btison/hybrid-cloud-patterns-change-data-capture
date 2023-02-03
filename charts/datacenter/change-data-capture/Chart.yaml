@@ -63,3 +63,6 @@ dependencies:
   - name: search-service
     version: 0.1.0
     repository: https://solution-pattern-cdc.github.io/helm
+  - name: retail-simulation
+    version: 0.1.0
+    repository: https://solution-pattern-cdc.github.io/helm

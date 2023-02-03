@@ -99,3 +99,10 @@ search-service:
     hosts: retail-es-http:9200
     username: cashback
     password: cashback 
+
+retail-simulation:
+  postgresql:
+    host: retail-db
+    username: retail
+    password: retail
+    database: retail
