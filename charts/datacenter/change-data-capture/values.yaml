@@ -93,3 +93,9 @@ cashback-service-ui:
     username: cashback
     password: cashback
     database: cashback
+
+search-service:
+  elasticsearch:
+    hosts: retail-es-http:9200
+    username: cashback
+    password: cashback 

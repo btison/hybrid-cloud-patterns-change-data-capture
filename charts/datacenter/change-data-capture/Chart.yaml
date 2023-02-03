@@ -60,3 +60,6 @@ dependencies:
   - name: cashback-service-ui
     version: 0.1.0
     repository: https://solution-pattern-cdc.github.io/helm
+  - name: search-service
+    version: 0.1.0
+    repository: https://solution-pattern-cdc.github.io/helm

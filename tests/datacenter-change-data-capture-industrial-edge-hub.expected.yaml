@@ -107,6 +107,19 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: retail-connectors
 ---
+# Source: globex/charts/search-service/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: search-service
+  labels:
+    helm.sh/chart: search-service-0.1.0
+    app.kubernetes.io/name: search-service
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: retail-connectors
+---
 # Source: globex/charts/cashback-connector/templates/secret.yaml
 apiVersion: v1
 kind: Secret
@@ -317,6 +330,28 @@ stringData:
     topic.lineitem-change-event=retail.updates.public.line_item
     topic.aggregated-sale=retail.sale-aggregated
 ---
+# Source: globex/charts/search-service/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: search-service
+  labels:
+    helm.sh/chart: search-service-0.1.0
+    app.kubernetes.io/name: search-service
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: retail-connectors
+type: "Opaque"
+stringData:
+  application.properties: |-
+    quarkus.elasticsearch.hosts=retail-es-http:9200
+    quarkus.elasticsearch.username=cashback
+    quarkus.elasticsearch.password=cashback
+    quarkus.elasticsearch.protocol=http
+
+    elasticsearch.index.name=products
+---
 # Source: globex/charts/cashback-db/templates/pvc.yaml
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -475,6 +510,29 @@ spec:
       name: http
   selector:
     app.kubernetes.io/name: sales-streams
+    app.kubernetes.io/instance: datacenter-change-data-capture
+---
+# Source: globex/charts/search-service/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: search-service
+  labels:
+    helm.sh/chart: search-service-0.1.0
+    app.kubernetes.io/name: search-service
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: retail-connectors
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: search-service
     app.kubernetes.io/instance: datacenter-change-data-capture
 ---
 # Source: globex/charts/cashback-connector/templates/deployment.yaml
@@ -1142,6 +1200,77 @@ spec:
           secret:
             secretName: sales-streams
 ---
+# Source: globex/charts/search-service/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    helm.sh/chart: search-service-0.1.0
+    app.kubernetes.io/name: search-service
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: retail-connectors
+    app.openshift.io/runtime: camel
+  name: search-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: search-service
+      app.kubernetes.io/instance: datacenter-change-data-capture
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/name: search-service
+        app.kubernetes.io/instance: datacenter-change-data-capture
+    spec:
+      serviceAccountName: search-service
+      securityContext:
+        {}
+      containers:
+        - name: search-service
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          image: "quay.io/solution-pattern-cdc/search-service:bdd446e"
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            {}
+          livenessProbe:
+            httpGet:
+              path: /q/health/live
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /q/health/ready
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+          volumeMounts:
+            - mountPath: /deployments/config
+              name: config
+      volumes:
+        - name: config
+          secret:
+            secretName: search-service
+---
 # Source: globex/charts/elasticsearch/templates/config-job.yaml
 apiVersion: batch/v1
 kind: Job
@@ -1522,6 +1651,24 @@ spec:
   to:
     kind: Service
     name: kafdrop
+    weight: 100
+  port:
+    targetPort: http
+  wildcardPolicy: None
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+---
+# Source: globex/charts/search-service/templates/route.yaml
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: search-service
+spec:
+  
+  to:
+    kind: Service
+    name: search-service
     weight: 100
   port:
     targetPort: http
