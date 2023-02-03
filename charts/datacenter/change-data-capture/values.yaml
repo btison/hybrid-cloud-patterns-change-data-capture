@@ -23,6 +23,11 @@ cashback-db:
   argocd: 
     enabled: *argo
     syncwave: "-2"
+  pgsql:
+    user: cashback
+    password: cashback
+    adminPassword: password
+    database: cashback
 
 elasticsearch:
   argocd:
@@ -59,3 +64,14 @@ sales-streams:
     saslMechanism: ""
     streams:
       replicationFactor: 3
+
+cashback-connector:
+  kafka:
+    bootstrapServer: *kafkaBootstrapServer
+    securityProtocol: ""
+    saslMechanism: ""
+  postgresql:
+    host: cashback-db
+    username: cashback
+    password: cashback
+    database: cashback

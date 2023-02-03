@@ -1,4 +1,17 @@
 ---
+# Source: globex/charts/cashback-connector/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cashback-connector
+  labels:
+    helm.sh/chart: cashback-connector-0.1.0
+    app.kubernetes.io/name: cashback-connector
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: retail-connectors
+---
 # Source: globex/charts/cashback-db/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -67,6 +80,36 @@ metadata:
     app.kubernetes.io/version: "1.0.0"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: retail-connectors
+---
+# Source: globex/charts/cashback-connector/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cashback-connector
+  labels:
+    helm.sh/chart: cashback-connector-0.1.0
+    app.kubernetes.io/name: cashback-connector
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: retail-connectors
+type: "Opaque"
+stringData:
+  application.properties: |-
+    camel.component.kafka.brokers=kafka-kafka-bootstrap:9092
+    
+
+    quarkus.datasource.cashback.jdbc.url=jdbc:postgresql://cashback-db:5432/cashback
+    quarkus.datasource.cashback.username=cashback
+    quarkus.datasource.cashback.password=cashback
+
+    kafka.customer.topic.name=retail.updates.public.customer
+    kafka.customer.consumer.group=cashback-connector
+
+    kafka.sale_aggregated.topic.name=retail.sale-aggregated
+    kafka.sale_aggregated.consumer.group=cashback-connector
+
+    kafka.expense_event.topic.name=retail.expense-event
 ---
 # Source: globex/charts/cashback-db/templates/secret.yaml
 kind: Secret
@@ -341,6 +384,82 @@ spec:
   selector:
     app.kubernetes.io/name: sales-streams
     app.kubernetes.io/instance: datacenter-change-data-capture
+---
+# Source: globex/charts/cashback-connector/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    helm.sh/chart: cashback-connector-0.1.0
+    app.kubernetes.io/name: cashback-connector
+    app.kubernetes.io/instance: datacenter-change-data-capture
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: retail-connectors
+    app.openshift.io/runtime: camel    
+  name: cashback-connector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cashback-connector
+      app.kubernetes.io/instance: datacenter-change-data-capture
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/name: cashback-connector
+        app.kubernetes.io/instance: datacenter-change-data-capture
+    spec:
+      serviceAccountName: cashback-connector
+      securityContext:
+        {}
+      containers:
+        - name: cashback-connector
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          image: "quay.io/solution-pattern-cdc/cashback-connector:83f8e65"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 250m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          livenessProbe:
+            httpGet:
+              path: /q/health/live
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /q/health/ready
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+          volumeMounts:
+            - mountPath: /deployments/config
+              name: config
+      volumes:
+        - name: config
+          secret:
+            secretName: cashback-connector
 ---
 # Source: globex/charts/cashback-db/templates/deployment.yaml
 apiVersion: apps/v1

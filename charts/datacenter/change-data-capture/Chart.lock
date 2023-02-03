@@ -26,5 +26,8 @@ dependencies:
 - name: sales-streams
   repository: https://solution-pattern-cdc.github.io/helm
   version: 0.1.0
-digest: sha256:885caa9e627eddc844a4266ede5977a8072de5ac35e7babecfa4abf011441e0b
-generated: "2023-02-03T15:29:29.551077102+01:00"
+- name: cashback-connector
+  repository: https://solution-pattern-cdc.github.io/helm
+  version: 0.1.0
+digest: sha256:fd0788e00a6f719e8fceaa7c8707cda98a851a7c430b421c8220605459360e1f
+generated: "2023-02-03T16:16:46.15779291+01:00"
