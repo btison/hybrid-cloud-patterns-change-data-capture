@@ -86,3 +86,10 @@ cashback-service:
     username: cashback
     password: cashback
     database: cashback
+
+cashback-service-ui:
+  postgresql:
+    host: cashback-db
+    username: cashback
+    password: cashback
+    database: cashback
