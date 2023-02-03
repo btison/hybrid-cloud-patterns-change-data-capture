@@ -75,3 +75,14 @@ cashback-connector:
     username: cashback
     password: cashback
     database: cashback
+
+cashback-service:
+  kafka:
+    bootstrapServer: *kafkaBootstrapServer
+    securityProtocol: ""
+    saslMechanism: ""
+  postgresql:
+    host: cashback-db
+    username: cashback
+    password: cashback
+    database: cashback

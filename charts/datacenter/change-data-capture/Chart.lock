@@ -29,5 +29,8 @@ dependencies:
 - name: cashback-connector
   repository: https://solution-pattern-cdc.github.io/helm
   version: 0.1.0
-digest: sha256:fd0788e00a6f719e8fceaa7c8707cda98a851a7c430b421c8220605459360e1f
-generated: "2023-02-03T16:16:46.15779291+01:00"
+- name: cashback-service
+  repository: https://solution-pattern-cdc.github.io/helm
+  version: 0.1.0
+digest: sha256:b22da3465d77afa1c32856f22fa5dd97eb13a751fd6a5ff6892c2c50f1877646
+generated: "2023-02-03T16:49:08.10985928+01:00"
