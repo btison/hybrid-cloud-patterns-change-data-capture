@@ -1657,7 +1657,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "-2"
 spec:
   partitions: 1
-  replicas: 2
+  replicas: 3
   config:
     retention.ms: -1
     segment.bytes: 1073741824
@@ -1679,7 +1679,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "-2"
 spec:
   partitions: 1
-  replicas: 2
+  replicas: 3
   config:
     retention.ms: -1
     segment.bytes: 1073741824
@@ -1701,7 +1701,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "-2"
 spec:
   partitions: 1
-  replicas: 2
+  replicas: 3
   config:
     retention.ms: -1
     segment.bytes: 1073741824
@@ -1723,7 +1723,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "-2"
 spec:
   partitions: 1
-  replicas: 2
+  replicas: 3
   config:
     retention.ms: -1
     segment.bytes: 1073741824
@@ -1745,7 +1745,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "-2"
 spec:
   partitions: 1
-  replicas: 2
+  replicas: 3
   config:
     retention.ms: -1
     segment.bytes: 1073741824
@@ -1767,7 +1767,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "-2"
 spec:
   partitions: 1
-  replicas: 2
+  replicas: 3
   config:
     retention.ms: -1
     segment.bytes: 1073741824

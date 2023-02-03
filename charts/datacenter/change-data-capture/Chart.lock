@@ -45,4 +45,4 @@ dependencies:
   repository: https://solution-pattern-cdc.github.io/helm
   version: 0.1.0
 digest: sha256:8c329026c0c0ac061a6db2933486b34587c75c302081425ad15d734beb98807e
-generated: "2023-02-03T20:24:45.535307979+01:00"
+generated: "2023-02-03T21:13:40.219887179+01:00"
